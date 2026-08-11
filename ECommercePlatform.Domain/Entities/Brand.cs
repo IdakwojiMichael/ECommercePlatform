@@ -2,57 +2,48 @@
 
 namespace ECommercePlatform.Domain.Entities;
 
-public class Category : BaseEntity
+public class Brand : BaseEntity
 {
     public string Name { get; private set; } = null!;
 
-    public string Slug { get; private set; } = null!;
-
     public string? Description { get; private set; }
 
-    public string? ImageUrl { get; private set; }
+    public string? LogoUrl { get; private set; }
 
-    public Guid? ParentCategoryId { get; private set; }
+    public string? Website { get; private set; }
 
     public bool IsActive { get; private set; }
-
-    public Category? ParentCategory { get; private set; }
-
-    public ICollection<Category> SubCategories { get; private set; }
-        = new List<Category>();
 
     public ICollection<Product> Products { get; private set; }
         = new List<Product>();
 
-    private Category()
+    private Brand()
     {
     }
 
-    public Category(
+    public Brand(
         string name,
-        string slug,
         string? description = null,
-        string? imageUrl = null,
-        Guid? parentCategoryId = null)
+        string? logoUrl = null,
+        string? website = null)
     {
         Name = name;
-        Slug = slug;
         Description = description;
-        ImageUrl = imageUrl;
-        ParentCategoryId = parentCategoryId;
+        LogoUrl = logoUrl;
+        Website = website;
         IsActive = true;
     }
 
     public void Update(
         string name,
-        string slug,
         string? description,
-        string? imageUrl)
+        string? logoUrl,
+        string? website)
     {
         Name = name;
-        Slug = slug;
         Description = description;
-        ImageUrl = imageUrl;
+        LogoUrl = logoUrl;
+        Website = website;
     }
 
     public void Activate()
