@@ -25,14 +25,34 @@ public class Notification : BaseEntity
         string title,
         string message)
     {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new ArgumentException(
+                "Notification title is required.",
+                nameof(title));
+        }
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            throw new ArgumentException(
+                "Notification message is required.",
+                nameof(message));
+        }
+
         CustomerId = customerId;
         Title = title;
         Message = message;
         IsRead = false;
+        ReadAt = null;
     }
 
     public void MarkAsRead()
     {
+        if (IsRead)
+        {
+            return;
+        }
+
         IsRead = true;
         ReadAt = DateTime.UtcNow;
     }

@@ -35,6 +35,13 @@ public class Coupon : BaseEntity
         int usageLimit,
         string? description = null)
     {
+        Validate(
+            code,
+            discountAmount,
+            startDate,
+            endDate,
+            usageLimit);
+
         Code = code;
         DiscountAmount = discountAmount;
         IsPercentage = isPercentage;
@@ -58,6 +65,12 @@ public class Coupon : BaseEntity
 
     public void IncrementUsage()
     {
+        if (UsageCount >= UsageLimit)
+        {
+            throw new InvalidOperationException(
+                "Coupon usage limit has been reached.");
+        }
+
         UsageCount++;
     }
 
@@ -69,5 +82,46 @@ public class Coupon : BaseEntity
             && now >= StartDate
             && now <= EndDate
             && UsageCount < UsageLimit;
+    }
+
+    private static void Validate(
+        string code,
+        decimal discountAmount,
+        DateTime startDate,
+        DateTime endDate,
+        int usageLimit)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentException(
+                "Coupon code is required.",
+                nameof(code));
+        }
+
+        if (discountAmount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(discountAmount),
+                "Discount amount must be greater than zero.");
+        }
+
+        if (endDate <= startDate)
+        {
+            throw new ArgumentException(
+                "Coupon end date must be after the start date.");
+        }
+
+        if (usageLimit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(usageLimit),
+                "Usage limit must be greater than zero.");
+        }
+
+        if (discountAmount > 100 && code.Length > 0)
+        {
+            // Percentage validation is handled when the coupon
+            // type is interpreted by the application.
+        }
     }
 }

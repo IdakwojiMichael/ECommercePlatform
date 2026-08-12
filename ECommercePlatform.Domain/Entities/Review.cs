@@ -28,6 +28,8 @@ public class Review : BaseEntity
         int rating,
         string comment)
     {
+        ValidateRating(rating);
+
         ProductId = productId;
         CustomerId = customerId;
         Rating = rating;
@@ -39,6 +41,8 @@ public class Review : BaseEntity
         int rating,
         string comment)
     {
+        ValidateRating(rating);
+
         Rating = rating;
         Comment = comment;
     }
@@ -51,5 +55,15 @@ public class Review : BaseEntity
     public void Reject()
     {
         IsApproved = false;
+    }
+
+    private static void ValidateRating(int rating)
+    {
+        if (rating < 1 || rating > 5)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(rating),
+                "Rating must be between 1 and 5.");
+        }
     }
 }

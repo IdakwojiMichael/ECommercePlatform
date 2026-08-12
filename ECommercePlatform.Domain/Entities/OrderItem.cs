@@ -34,6 +34,9 @@ public class OrderItem : BaseEntity
         decimal unitPrice,
         int quantity)
     {
+        ValidateUnitPrice(unitPrice);
+        ValidateQuantity(quantity);
+
         OrderId = orderId;
         ProductVariantId = productVariantId;
         ProductName = productName;
@@ -45,7 +48,29 @@ public class OrderItem : BaseEntity
 
     public void UpdateQuantity(int quantity)
     {
+        ValidateQuantity(quantity);
+
         Quantity = quantity;
         TotalPrice = UnitPrice * quantity;
+    }
+
+    private static void ValidateUnitPrice(decimal unitPrice)
+    {
+        if (unitPrice <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(unitPrice),
+                "Unit price must be greater than zero.");
+        }
+    }
+
+    private static void ValidateQuantity(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(quantity),
+                "Order item quantity must be greater than zero.");
+        }
     }
 }

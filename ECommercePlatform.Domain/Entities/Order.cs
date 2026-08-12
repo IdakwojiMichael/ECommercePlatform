@@ -7,8 +7,6 @@ public class Order : BaseEntity
 {
     public Guid CustomerId { get; private set; }
 
-    public Guid ShippingAddressId { get; private set; }
-
     public string OrderNumber { get; private set; } = null!;
 
     public decimal SubTotal { get; private set; }
@@ -25,7 +23,7 @@ public class Order : BaseEntity
 
     public Customer Customer { get; private set; } = null!;
 
-    public Address ShippingAddress { get; private set; } = null!;
+    public OrderShippingAddress ShippingAddress { get; private set; } = null!;
 
     public ICollection<OrderItem> Items { get; private set; }
         = new List<OrderItem>();
@@ -39,19 +37,59 @@ public class Order : BaseEntity
 
     public Order(
         Guid customerId,
-        Guid shippingAddressId,
         string orderNumber,
+        OrderShippingAddress shippingAddress,
         decimal subTotal,
         decimal shippingCost,
         decimal discountAmount)
     {
+        if (string.IsNullOrWhiteSpace(orderNumber))
+        {
+            throw new ArgumentException(
+                "Order number is required.",
+                nameof(orderNumber));
+        }
+
+        if (subTotal < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(subTotal),
+                "Subtotal cannot be negative.");
+        }
+
+        if (shippingCost < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(shippingCost),
+                "Shipping cost cannot be negative.");
+        }
+
+        if (discountAmount < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(discountAmount),
+                "Discount amount cannot be negative.");
+        }
+
+        if (discountAmount > subTotal + shippingCost)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(discountAmount),
+                "Discount cannot exceed the order amount.");
+        }
+
         CustomerId = customerId;
-        ShippingAddressId = shippingAddressId;
         OrderNumber = orderNumber;
+        ShippingAddress = shippingAddress;
         SubTotal = subTotal;
         ShippingCost = shippingCost;
         DiscountAmount = discountAmount;
-        TotalAmount = subTotal + shippingCost - discountAmount;
+
+        TotalAmount =
+            subTotal +
+            shippingCost -
+            discountAmount;
+
         Status = OrderStatus.Pending;
         OrderDate = DateTime.UtcNow;
     }
